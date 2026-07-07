@@ -162,7 +162,7 @@ export default function SubmitScreen() {
               </MapView>
             ) : (
               <FontAwesome6
-                name="map-marker-alt"
+                name="map-location-dot"
                 size={38}
                 color={theme.danger}
               />
