@@ -52,6 +52,7 @@ export default function RegisterAddress() {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1, backgroundColor: theme.bg }}
+      keyboardVerticalOffset={Platform.select({ ios: 0, android: -100 })}
     >
       <View
         style={[
