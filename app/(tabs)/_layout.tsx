@@ -1,9 +1,15 @@
 import React, { useContext } from "react";
-import { Tabs } from "expo-router";
+import { Tabs, Redirect } from "expo-router";
 import { FontAwesome6 } from "@expo/vector-icons";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { BlurView } from "expo-blur";
 import { ThemeContext } from "../../src/contexts/ThemeContext";
+import { AuthContext } from "../../src/contexts/AuthContext";
 import { Typography } from "../../src/components/atoms/Typography";
 
 function CustomTabBar({ state, descriptors, navigation }: any) {
@@ -86,6 +92,28 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
 }
 
 export default function TabLayout() {
+  const { signed, loading } = useContext(AuthContext);
+  const { theme } = useContext(ThemeContext);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: theme.bg,
+        }}
+      >
+        <ActivityIndicator size="large" color={theme.primary} />
+      </View>
+    );
+  }
+
+  if (!signed) {
+    return <Redirect href="/login" />;
+  }
+
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}

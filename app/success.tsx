@@ -4,6 +4,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { Typography } from "../src/components/atoms/Typography";
 import { Button } from "../src/components/atoms/Button";
 import { ThemeContext } from "../src/contexts/ThemeContext";
+import { Guard } from "../src/components/Guard";
 import { useRouter } from "expo-router";
 
 export default function SuccessScreen() {
@@ -28,49 +29,54 @@ export default function SuccessScreen() {
   });
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.bg }]}>
-      <View style={styles.content}>
-        <View style={[styles.circle, { backgroundColor: "#dcfce7" }]}>
-          <FontAwesome6 name="check" size={46} color={theme.success} />
-        </View>
-        <Typography
-          variant="h1"
-          style={{ color: theme.success, marginBottom: 8 }}
-        >
-          Relato Enviado!
-        </Typography>
-        <Typography
-          variant="body"
-          style={{ textAlign: "center", marginBottom: 32 }}
-        >
-          Agradecemos por colaborar com Doutor Severiano. A prefeitura já
-          recebeu seu chamado.
-        </Typography>
+    <Guard>
+      <View style={[styles.container, { backgroundColor: theme.bg }]}>
+        <View style={styles.content}>
+          <View style={[styles.circle, { backgroundColor: "#dcfce7" }]}>
+            <FontAwesome6 name="check" size={46} color={theme.success} />
+          </View>
+          <Typography
+            variant="h1"
+            style={{ color: theme.success, marginBottom: 8 }}
+          >
+            Relato Enviado!
+          </Typography>
+          <Typography
+            variant="body"
+            style={{ textAlign: "center", marginBottom: 32 }}
+          >
+            Agradecemos por colaborar com Doutor Severiano. A prefeitura já
+            recebeu seu chamado.
+          </Typography>
 
-        <Typography variant="caption" style={{ marginBottom: 8 }}>
-          Redirecionando automaticamente...
-        </Typography>
-        <View
-          style={[styles.progressContainer, { backgroundColor: theme.border }]}
-        >
-          <Animated.View
+          <Typography variant="caption" style={{ marginBottom: 8 }}>
+            Redirecionando automaticamente...
+          </Typography>
+          <View
             style={[
-              styles.progressBar,
-              { backgroundColor: theme.primary, width: widthInterpolated },
+              styles.progressContainer,
+              { backgroundColor: theme.border },
             ]}
+          >
+            <Animated.View
+              style={[
+                styles.progressBar,
+                { backgroundColor: theme.primary, width: widthInterpolated },
+              ]}
+            />
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+          <Button
+            title="Ir para o Início agora"
+            variant="secondary"
+            onPress={() => router.replace("/(tabs)/home")}
+            style={{ borderWidth: 0 }}
           />
         </View>
       </View>
-
-      <View style={styles.footer}>
-        <Button
-          title="Ir para o Início agora"
-          variant="secondary"
-          onPress={() => router.replace("/(tabs)/home")}
-          style={{ borderWidth: 0 }}
-        />
-      </View>
-    </View>
+    </Guard>
   );
 }
 

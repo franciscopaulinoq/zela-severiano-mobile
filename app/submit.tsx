@@ -15,6 +15,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { Typography } from "../src/components/atoms/Typography";
 import { Button } from "../src/components/atoms/Button";
 import { ThemeContext } from "../src/contexts/ThemeContext";
+import { Guard } from "../src/components/Guard";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { api } from "../src/services/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -109,127 +110,132 @@ export default function SubmitScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1, backgroundColor: theme.bg }}
-      keyboardVerticalOffset={Platform.select({ ios: 0, android: -100 })}
-    >
-      <View
-        style={[
-          styles.header,
-          { backgroundColor: theme.surface, paddingTop: insets.top + 20 },
-        ]}
+    <Guard>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1, backgroundColor: theme.bg }}
       >
-        <TouchableOpacity
-          style={[styles.btnIcon, { borderColor: theme.border }]}
-          onPress={() => router.back()}
+        <View
+          style={[
+            styles.header,
+            { backgroundColor: theme.surface, paddingTop: insets.top + 20 },
+          ]}
         >
-          <FontAwesome6 name="arrow-left" size={20} color={theme.textPrimary} />
-        </TouchableOpacity>
-        <Typography
-          variant="h2"
-          style={{ flex: 1, textAlign: "center", marginRight: 48 }}
-        >
-          Detalhes Finais
-        </Typography>
-      </View>
+          <TouchableOpacity
+            style={[styles.btnIcon, { borderColor: theme.border }]}
+            onPress={() => router.back()}
+          >
+            <FontAwesome6
+              name="arrow-left"
+              size={20}
+              color={theme.textPrimary}
+            />
+          </TouchableOpacity>
+          <Typography
+            variant="h2"
+            style={{ flex: 1, textAlign: "center", marginRight: 48 }}
+          >
+            Detalhes Finais
+          </Typography>
+        </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={[styles.mapMockup, { backgroundColor: theme.border }]}>
-          {location ? (
-            <MapView
-              style={{ width: "100%", height: "100%" }}
-              initialRegion={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005,
-              }}
-              scrollEnabled={false}
-              zoomEnabled={false}
-            >
-              <Marker
-                coordinate={{
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={[styles.mapMockup, { backgroundColor: theme.border }]}>
+            {location ? (
+              <MapView
+                style={{ width: "100%", height: "100%" }}
+                initialRegion={{
                   latitude: location.latitude,
                   longitude: location.longitude,
+                  latitudeDelta: 0.005,
+                  longitudeDelta: 0.005,
                 }}
+                scrollEnabled={false}
+                zoomEnabled={false}
+              >
+                <Marker
+                  coordinate={{
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                  }}
+                />
+              </MapView>
+            ) : (
+              <FontAwesome6
+                name="map-marker-alt"
+                size={38}
+                color={theme.danger}
               />
-            </MapView>
-          ) : (
-            <FontAwesome6
-              name="map-marker-alt"
-              size={38}
-              color={theme.danger}
-            />
-          )}
+            )}
 
-          <View style={styles.gpsBadge}>
-            <FontAwesome6 name="crosshairs" color={theme.success} />
-            <Typography
-              variant="body"
-              style={{
-                color: theme.success,
-                fontWeight: "bold",
-                marginLeft: 4,
-              }}
-            >
-              {location ? "GPS Ativo" : "Buscando GPS..."}
-            </Typography>
+            <View style={styles.gpsBadge}>
+              <FontAwesome6 name="crosshairs" color={theme.success} />
+              <Typography
+                variant="body"
+                style={{
+                  color: theme.success,
+                  fontWeight: "bold",
+                  marginLeft: 4,
+                }}
+              >
+                {location ? "GPS Ativo" : "Buscando GPS..."}
+              </Typography>
+            </View>
           </View>
-        </View>
 
-        <View style={{ marginBottom: 22 }}>
-          <Typography variant="label">Endereço Capturado</Typography>
-          <TextInput
-            style={[
-              styles.addressArea,
-              {
-                borderColor: theme.border,
-                backgroundColor: theme.bg,
-                color: theme.textSecondary,
-              },
-            ]}
-            editable={false}
-            multiline
-            value={address}
+          <View style={{ marginBottom: 22 }}>
+            <Typography variant="label">Endereço Capturado</Typography>
+            <TextInput
+              style={[
+                styles.addressArea,
+                {
+                  borderColor: theme.border,
+                  backgroundColor: theme.bg,
+                  color: theme.textSecondary,
+                },
+              ]}
+              editable={false}
+              multiline
+              value={address}
+            />
+          </View>
+
+          <View style={{ marginBottom: 22 }}>
+            <Typography variant="label">Descrição (Opcional)</Typography>
+            <TextInput
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              style={[
+                styles.textArea,
+                {
+                  borderColor: isFocused ? theme.primary : theme.border,
+                  backgroundColor: theme.surface,
+                  color: theme.textPrimary,
+                },
+              ]}
+              multiline
+              placeholderTextColor={theme.textSecondary}
+              placeholder="Ex: Poste apagado em frente ao mercado..."
+              value={descricao}
+              onChangeText={setDescricao}
+            />
+          </View>
+        </ScrollView>
+
+        <View
+          style={[
+            styles.footer,
+            { paddingBottom: insets.bottom || 24, backgroundColor: theme.bg },
+          ]}
+        >
+          <Button
+            title="Enviar Relato"
+            onPress={handleSubmit}
+            loading={loading}
           />
         </View>
-
-        <View style={{ marginBottom: 22 }}>
-          <Typography variant="label">Descrição (Opcional)</Typography>
-          <TextInput
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            style={[
-              styles.textArea,
-              {
-                borderColor: isFocused ? theme.primary : theme.border,
-                backgroundColor: theme.surface,
-                color: theme.textPrimary,
-              },
-            ]}
-            multiline
-            placeholderTextColor={theme.textSecondary}
-            placeholder="Ex: Poste apagado em frente ao mercado..."
-            value={descricao}
-            onChangeText={setDescricao}
-          />
-        </View>
-      </ScrollView>
-
-      <View
-        style={[
-          styles.footer,
-          { paddingBottom: insets.bottom || 24, backgroundColor: theme.bg },
-        ]}
-      >
-        <Button
-          title="Enviar Relato"
-          onPress={handleSubmit}
-          loading={loading}
-        />
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </Guard>
   );
 }
 

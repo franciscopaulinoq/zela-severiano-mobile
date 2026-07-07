@@ -5,6 +5,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { Typography } from "../src/components/atoms/Typography";
 import { Button } from "../src/components/atoms/Button";
 import { ThemeContext } from "../src/contexts/ThemeContext";
+import { Guard } from "../src/components/Guard";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -17,23 +18,35 @@ export default function CameraScreen() {
   const [photo, setPhoto] = useState<string | null>(null);
   const cameraRef = useRef<CameraView>(null);
 
-  if (!permission) return <View />;
+  if (!permission)
+    return (
+      <Guard>
+        <View style={{ flex: 1, backgroundColor: theme.bg }} />
+      </Guard>
+    );
+
   if (!permission.granted) {
     return (
-      <View
-        style={[
-          styles.container,
-          { justifyContent: "center", padding: 24, backgroundColor: theme.bg },
-        ]}
-      >
-        <Typography
-          variant="body"
-          style={{ textAlign: "center", marginBottom: 16 }}
+      <Guard>
+        <View
+          style={[
+            styles.container,
+            {
+              justifyContent: "center",
+              padding: 24,
+              backgroundColor: theme.bg,
+            },
+          ]}
         >
-          Precisamos de acesso à câmera
-        </Typography>
-        <Button title="Conceder Permissão" onPress={requestPermission} />
-      </View>
+          <Typography
+            variant="body"
+            style={{ textAlign: "center", marginBottom: 16 }}
+          >
+            Precisamos de acesso à câmera
+          </Typography>
+          <Button title="Conceder Permissão" onPress={requestPermission} />
+        </View>
+      </Guard>
     );
   }
 
@@ -51,74 +64,80 @@ export default function CameraScreen() {
     });
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.bg }]}>
-      <View
-        style={[
-          styles.header,
-          { backgroundColor: theme.surface, paddingTop: insets.top + 20 },
-        ]}
-      >
-        <TouchableOpacity
-          style={[styles.btnIcon, { borderColor: theme.border }]}
-          onPress={() => router.back()}
+    <Guard>
+      <View style={[styles.container, { backgroundColor: theme.bg }]}>
+        <View
+          style={[
+            styles.header,
+            { backgroundColor: theme.surface, paddingTop: insets.top + 20 },
+          ]}
         >
-          <FontAwesome6 name="arrow-left" size={20} color={theme.textPrimary} />
-        </TouchableOpacity>
-        <Typography
-          variant="h2"
-          style={{ flex: 1, textAlign: "center", marginRight: 48 }}
-        >
-          Evidência
-        </Typography>
-      </View>
+          <TouchableOpacity
+            style={[styles.btnIcon, { borderColor: theme.border }]}
+            onPress={() => router.back()}
+          >
+            <FontAwesome6
+              name="arrow-left"
+              size={20}
+              color={theme.textPrimary}
+            />
+          </TouchableOpacity>
+          <Typography
+            variant="h2"
+            style={{ flex: 1, textAlign: "center", marginRight: 48 }}
+          >
+            Evidência
+          </Typography>
+        </View>
 
-      <View style={styles.content}>
-        <Typography variant="body" style={{ marginBottom: 16 }}>
-          Tire uma foto clara do problema.
-        </Typography>
-        <View style={styles.viewfinder}>
+        <View style={styles.content}>
+          <Typography variant="body" style={{ marginBottom: 16 }}>
+            Tire uma foto clara do problema.
+          </Typography>
+          <View style={styles.viewfinder}>
+            {!photo ? (
+              <CameraView style={{ flex: 1 }} facing="back" ref={cameraRef} />
+            ) : (
+              <Image source={{ uri: photo }} style={{ flex: 1 }} />
+            )}
+          </View>
+        </View>
+
+        <View style={[styles.footer, { paddingBottom: insets.bottom || 24 }]}>
           {!photo ? (
-            <CameraView style={{ flex: 1 }} facing="back" ref={cameraRef} />
+            <>
+              <TouchableOpacity
+                style={[styles.captureBtn, { borderColor: theme.primary }]}
+                onPress={takePic}
+              />
+              <Button
+                title="Pular esta etapa"
+                variant="secondary"
+                onPress={advance}
+                style={({ pressed }) => [
+                  { borderWidth: 0, marginTop: 16 },
+                  pressed && { backgroundColor: theme.navBg },
+                ]}
+              />
+            </>
           ) : (
-            <Image source={{ uri: photo }} style={{ flex: 1 }} />
+            <>
+              <Button
+                title="Confirmar Foto"
+                onPress={advance}
+                style={{ marginBottom: 12, width: "100%" }}
+              />
+              <Button
+                title="Tirar outra"
+                variant="secondary"
+                onPress={() => setPhoto(null)}
+                style={{ width: "100%" }}
+              />
+            </>
           )}
         </View>
       </View>
-
-      <View style={[styles.footer, { paddingBottom: insets.bottom || 24 }]}>
-        {!photo ? (
-          <>
-            <TouchableOpacity
-              style={[styles.captureBtn, { borderColor: theme.primary }]}
-              onPress={takePic}
-            />
-            <Button
-              title="Pular esta etapa"
-              variant="secondary"
-              onPress={advance}
-              style={({ pressed }) => [
-                { borderWidth: 0, marginTop: 16 },
-                pressed && { backgroundColor: theme.navBg },
-              ]}
-            />
-          </>
-        ) : (
-          <>
-            <Button
-              title="Confirmar Foto"
-              onPress={advance}
-              style={{ marginBottom: 12, width: "100%" }}
-            />
-            <Button
-              title="Tirar outra"
-              variant="secondary"
-              onPress={() => setPhoto(null)}
-              style={{ width: "100%" }}
-            />
-          </>
-        )}
-      </View>
-    </View>
+    </Guard>
   );
 }
 
