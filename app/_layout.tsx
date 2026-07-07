@@ -7,9 +7,10 @@ import { useContext } from "react";
 
 function RootApp() {
   const { isDark } = useContext(ThemeContext);
+
   return (
     <>
-      <StatusBar style={isDark ? "light" : "dark"} translucent />
+      <StatusBar style={isDark ? "light" : "dark"} translucent={true} />
       <Slot />
     </>
   );
