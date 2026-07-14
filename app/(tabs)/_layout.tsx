@@ -11,12 +11,16 @@ import { BlurView } from "expo-blur";
 import { ThemeContext } from "../../src/contexts/ThemeContext";
 import { AuthContext } from "../../src/contexts/AuthContext";
 import { Typography } from "../../src/components/atoms/Typography";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function CustomTabBar({ state, descriptors, navigation }: any) {
   const { theme, isDark } = useContext(ThemeContext);
+  const insets = useSafeAreaInsets();
+
+  const bottomPadding = insets.bottom > 0 ? insets.bottom : 16;
 
   return (
-    <View style={styles.tabContainer}>
+    <View style={[styles.tabContainer, { bottom: bottomPadding }]}>
       <BlurView
         intensity={isDark ? 40 : 80}
         tint={isDark ? "dark" : "light"}
@@ -128,7 +132,6 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabContainer: {
     position: "absolute",
-    bottom: 24,
     width: "100%",
     alignItems: "center",
     zIndex: 100,

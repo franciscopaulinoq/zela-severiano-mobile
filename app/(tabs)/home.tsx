@@ -36,6 +36,12 @@ export default function Home() {
   // Criamos uma versão transparente da cor de fundo atual para o degradê perfeito
   const transparentBg = theme.bg + "00";
 
+  const tabBarHeight = 64;
+
+  const tabBarBottom = insets.bottom > 0 ? insets.bottom : 16;
+
+  const fabBottom = tabBarBottom + tabBarHeight + 32;
+
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <View
@@ -102,6 +108,7 @@ export default function Home() {
             backgroundColor: theme.primary,
             opacity: pressed ? 0.8 : 1,
             transform: [{ scale: pressed ? 0.95 : 1 }],
+            bottom: fabBottom,
           },
         ]}
         onPress={() => router.push("/category")}
@@ -141,7 +148,6 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: "absolute",
-    bottom: 110,
     right: 24,
     width: 64,
     height: 64,
