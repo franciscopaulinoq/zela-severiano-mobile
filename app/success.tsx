@@ -6,11 +6,13 @@ import { Button } from "../src/components/atoms/Button";
 import { ThemeContext } from "../src/contexts/ThemeContext";
 import { Guard } from "../src/components/Guard";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SuccessScreen() {
   const router = useRouter();
   const { theme } = useContext(ThemeContext);
   const progressAnim = useRef(new Animated.Value(0)).current;
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     Animated.timing(progressAnim, {
@@ -67,7 +69,12 @@ export default function SuccessScreen() {
           </View>
         </View>
 
-        <View style={styles.footer}>
+        <View
+          style={[
+            styles.footer,
+            { paddingBottom: insets.bottom || 24, backgroundColor: theme.bg },
+          ]}
+        >
           <Button
             title="Ir para o Início agora"
             variant="secondary"
